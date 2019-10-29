@@ -9,9 +9,8 @@ import com.example.demo.model.Entity;
 
 
 
-@Repository
-public interface IEntityRepository extends MongoRepository<Entity, String> {
+//@Repository
+public interface IEntityRepository  {
 
-	List<Entity> findByType(String type);
 	
 }

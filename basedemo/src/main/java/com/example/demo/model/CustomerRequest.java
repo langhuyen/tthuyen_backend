@@ -5,8 +5,6 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.example.demo.model.ultilities.RequestType;
-
 
 /*created:tthuyenn 08/09/2019
  * Model chứa thông tin các request của customer

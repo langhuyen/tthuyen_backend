@@ -5,14 +5,12 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.example.demo.model.ultilities.EntityType;
-
 
 
 
 /*created:tthuyenn 08/09/2019
- * Model chứa thông tin các đối tượng cần quản lý
- * 
+ * Model chứa thông tin các đối tượng cần quản lý(Depot)
+ * Id Tương đương với locationCode
  */
 @Document(collection="entity")
 public class Entity extends BaseModel implements Serializable{
@@ -22,6 +20,7 @@ public class Entity extends BaseModel implements Serializable{
 
 	private LatLng latLng;
 	private String address;
+	
 //	private EntityType type;
 	public String getId() {
 		return id;
