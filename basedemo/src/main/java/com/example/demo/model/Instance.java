@@ -18,8 +18,16 @@ public class Instance extends BaseModel {
 	private Float weight= new Float(0.0);
 	private String depotCode;
 	private String depotLocationCode;
+	private String status="Rảnh";
 	private List<String> returnDepotCodes;
 	private List<Interval>  intervals;
+	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public String getId() {
 		return id;
 	}

@@ -1,17 +1,20 @@
 package com.example.demo.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**Thong tin ma tran khoang cach
  * TTHuyen_29/10/2019
  * */
 @Document(collection = "distance")
-public class Distance {
+public class Distance extends BaseModel{
+	@Id
+	private String id;
 	private String srcCode;
 	private String desCode;
 	private Boolean isDriveBalance=true;
 	private Float distance;
-	private Integer travelTime;
+	private Float travelTime;
 	public String getSrcCode() {
 		return srcCode;
 	}
@@ -36,10 +39,10 @@ public class Distance {
 	public void setDistance(Float distance) {
 		this.distance = distance;
 	}
-	public Integer getTravelTime() {
+	public Float getTravelTime() {
 		return travelTime;
 	}
-	public void setTravelTime(Integer travelTime) {
+	public void setTravelTime(Float travelTime) {
 		this.travelTime = travelTime;
 	}
 	

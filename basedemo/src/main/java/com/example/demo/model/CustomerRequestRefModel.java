@@ -1,22 +1,20 @@
 package com.example.demo.model;
 
 import java.util.Date;
+import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-
-/*created:tthuyenn 08/09/2019
- * Model chứa thông tin các request của customer
- * 
+/****
+ * Model lưu trữ thông tin của các request có ref đến container warehouse port
+ * @author huyen.tt166212
+ *
  */
-@Document(collection="customer_request")
-public class CustomerRequest extends BaseModel {
-	@Id
+public class CustomerRequestRefModel{
 	private String id;
-	private String warehouseCode;
-	private String portCode;
-	private String containerCode;
+	private String code;
+	private String type;
+	private List<Entity> warehouseCode;
+	private List<Entity> portCode;
+	private List<Instance> containerCode;
 	private String depotContainerCode;
 	private Date earlyPickupDateTime;
 	private Date latePickupDateTime;
@@ -25,11 +23,18 @@ public class CustomerRequest extends BaseModel {
 	private String containerTypeCode;
 	private Integer quantity;
 	private Date requestDate=new Date();
-	public String getDepotContainerCode() {
-		return depotContainerCode;
+	
+	public String getCode() {
+		return code;
 	}
-	public void setDepotContainerCode(String depotContainerCode) {
-		this.depotContainerCode = depotContainerCode;
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	public String getId() {
 		return id;
@@ -37,23 +42,29 @@ public class CustomerRequest extends BaseModel {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getWarehouseCode() {
+	public List<Entity> getWarehouseCode() {
 		return warehouseCode;
 	}
-	public void setWarehouseCode(String warehouseCode) {
+	public void setWarehouseCode(List<Entity> warehouseCode) {
 		this.warehouseCode = warehouseCode;
 	}
-	public String getPortCode() {
+	public List<Entity> getPortCode() {
 		return portCode;
 	}
-	public void setPortCode(String portCode) {
+	public void setPortCode(List<Entity> portCode) {
 		this.portCode = portCode;
 	}
-	public String getContainerCode() {
+	public List<Instance> getContainerCode() {
 		return containerCode;
 	}
-	public void setContainerCode(String containerCode) {
+	public void setContainerCode(List<Instance> containerCode) {
 		this.containerCode = containerCode;
+	}
+	public String getDepotContainerCode() {
+		return depotContainerCode;
+	}
+	public void setDepotContainerCode(String depotContainerCode) {
+		this.depotContainerCode = depotContainerCode;
 	}
 	public Date getEarlyPickupDateTime() {
 		return earlyPickupDateTime;
@@ -97,30 +108,6 @@ public class CustomerRequest extends BaseModel {
 	public void setRequestDate(Date requestDate) {
 		this.requestDate = requestDate;
 	}
-	public CustomerRequest(String id, String warehouseCode, String portCode, String containerCode,
-			Date earlyPickupDateTime, Date latePickupDateTime, Date earlyDeliveryDateTime, Date lateDeliveryDateTime,
-			String containerTypeCode, Integer quantity, Date requestDate) {
-		super();
-		this.id = id;
-		this.warehouseCode = warehouseCode;
-		this.portCode = portCode;
-		this.containerCode = containerCode;
-		this.earlyPickupDateTime = earlyPickupDateTime;
-		this.latePickupDateTime = latePickupDateTime;
-		this.earlyDeliveryDateTime = earlyDeliveryDateTime;
-		this.lateDeliveryDateTime = lateDeliveryDateTime;
-		this.containerTypeCode = containerTypeCode;
-		this.quantity = quantity;
-		this.requestDate = requestDate;
-	}
-	public CustomerRequest() {
-		super();
-	}
-	
-	
-	
-
-
 	
 
 }
