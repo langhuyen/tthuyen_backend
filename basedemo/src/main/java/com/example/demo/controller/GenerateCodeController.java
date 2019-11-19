@@ -19,7 +19,7 @@ import com.example.demo.service.IBaseService;
 public class GenerateCodeController {
 
 	@Autowired
-	IBaseService<GenerateCode> codeService;
+	IBaseService<GenerateCode,String> codeService;
 	
 	@GetMapping("/AutoGenerateCode/:{type}")
 	public ResponseModel get(@PathVariable String type){

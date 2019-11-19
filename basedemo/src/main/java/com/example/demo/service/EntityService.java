@@ -14,7 +14,7 @@ import com.example.demo.repository.IBaseRepository;
 import com.example.demo.repository.IEntityRepository;
 
 @Service
-public class EntityService extends BaseService<Entity> {
+public class EntityService extends BaseService<Entity,String> {
 
 	/**
 	 * Lay danh sach cac depot không phải port và warehouse

@@ -6,6 +6,6 @@ import com.example.demo.model.CustomerRequest;
 import com.example.demo.model.Entity;
 
 @Repository
-public interface ICustomerRequestRepository  extends IBaseRepository<CustomerRequest>  {
+public interface ICustomerRequestRepository  extends IBaseRepository<CustomerRequest,String>  {
 
 }

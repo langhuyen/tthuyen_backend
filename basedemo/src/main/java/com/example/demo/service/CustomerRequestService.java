@@ -24,7 +24,7 @@ import com.example.demo.repository.ICustomerRequestRepository;
 import com.mongodb.client.model.Aggregates;
 
 @Service
-public class CustomerRequestService extends BaseService<CustomerRequest>{
+public class CustomerRequestService extends BaseService<CustomerRequest,String>{
 
 	/**
 	 * Thực hiện lấy các request chứa các loại

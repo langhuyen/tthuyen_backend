@@ -17,13 +17,22 @@ public class Entity extends BaseModel implements Serializable{
 	
 	 @Id
 	private String id;
-
+	private Integer locationCode;
+	
 	private LatLng latLng;
 	private String address;
 	
 //	private EntityType type;
+	
+	
 	public String getId() {
 		return id;
+	}
+	public Integer getLocationCode() {
+		return locationCode;
+	}
+	public void setLocationCode(Integer locationCode) {
+		this.locationCode = locationCode;
 	}
 	public void setId(String id) {
 		this.id = id;

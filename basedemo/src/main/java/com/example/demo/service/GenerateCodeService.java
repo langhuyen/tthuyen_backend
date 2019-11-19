@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.model.GenerateCode;
 
 @Service
-public class GenerateCodeService extends BaseService<GenerateCode>{
+public class GenerateCodeService extends BaseService<GenerateCode,String>{
 
 	public String getByOtherType(String type) {
 		// TODO Auto-generated method stub
@@ -16,8 +16,16 @@ public class GenerateCodeService extends BaseService<GenerateCode>{
 			for(int i=0;i<9-code.getCode().toString().length();i++) {
 				result.append("0");
 			}
-			result.append(code.getCode().toString());
+			result.append(Integer.parseInt(code.getCode()));
 			return result.toString();
+		}
+		return null;
+	}
+	public GenerateCode getIdCodeByType(String type) {
+		if(!repo.findByType(type).isEmpty()) {
+			
+			GenerateCode code= repo.findByType(type).get(0);
+			return code;
 		}
 		return null;
 	}

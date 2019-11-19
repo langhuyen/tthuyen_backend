@@ -24,10 +24,10 @@ import com.example.demo.service.IBaseService;
 public class BaseController<T extends BaseModel,ID extends Serializable> {
 	
 	@Autowired
-	IBaseService<T> service;
+	IBaseService<T,ID> service;
 
 	@Autowired 
-	IBaseService<GenerateCode> codeService;
+	IBaseService<GenerateCode,String> codeService;
 
 	
 	@GetMapping("/get")
@@ -71,7 +71,7 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		return res;
 	}
 	@GetMapping("/detail/:{id}")
-	public ResponseModel getById(@PathVariable String id){
+	public ResponseModel getById(@PathVariable ID id){
 		ResponseModel res=new ResponseModel();
 		List<T> lst=new ArrayList<T>();
 		try {
@@ -91,6 +91,12 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		}
 		return res;
 	}
+	
+	/**
+	 * Thực hiện insert 
+	 * @param entity
+	 * @return
+	 */
 	@PostMapping("/insert")
 	public ResponseModel insert(@RequestBody T entity){
 		ResponseModel res=new ResponseModel();
@@ -100,6 +106,10 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 			if(entity.getCode().equals(codeSys)) {
 				((GenerateCodeService)codeService).editType(entity.getType().toString());
 				};
+				GenerateCode idCode=((GenerateCodeService)codeService).getIdCodeByType(entity.getType().toString());
+				entity.setIdCode(idCode.getIdCode());
+				idCode.setIdCode(idCode.getIdCode()+1);
+				((GenerateCodeService)codeService).editEntity(idCode);
 			T en=service.insertEntity(entity);
 			lst.add(en);
 			res.setData(lst);

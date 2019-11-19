@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class CustomerRequest extends BaseModel {
 	@Id
 	private String id;
+
 	private String warehouseCode;
 	private String portCode;
 	private String containerCode;

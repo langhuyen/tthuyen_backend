@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.model.Instance;
 
 @Repository
-public interface IInstanceRepository extends IBaseRepository<Instance> {
+public interface IInstanceRepository extends IBaseRepository<Instance,String> {
 
 }

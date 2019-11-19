@@ -11,9 +11,9 @@ import com.example.demo.model.Entity;
 import com.example.demo.repository.IBaseRepository;
 
 
-public class BaseService<T extends BaseModel> implements IBaseService<T> {
+public class BaseService<T extends BaseModel,ID> implements IBaseService<T,ID> {
 	@Autowired
-	IBaseRepository<T> repo;
+	IBaseRepository<T,ID> repo;
 
 	
 	@Override
@@ -34,7 +34,7 @@ public class BaseService<T extends BaseModel> implements IBaseService<T> {
 	}
 
 	@Override
-	public T getById(String id) {
+	public T getById(ID id) {
 		// TODO Auto-generated method stub
 		
 		return repo.findById(id).get();

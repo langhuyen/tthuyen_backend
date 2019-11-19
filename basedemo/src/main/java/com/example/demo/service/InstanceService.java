@@ -12,7 +12,7 @@ import com.example.demo.model.CustomerRequestRefModel;
 import com.example.demo.model.Instance;
 
 @Service
-public class InstanceService extends BaseService<Instance>{
+public class InstanceService extends BaseService<Instance,String>{
 
 	/***
 	 * Lấy các thực thể rảnh của 1 loại

@@ -3,10 +3,19 @@ package com.example.demo.model;
 public class BaseModel {
 
 	
-	protected String code;
 	protected String name;
 	protected String type;
+	protected String code;
+	private Integer idCode;
 	
+	
+
+	public Integer getIdCode() {
+		return idCode;
+	}
+	public void setIdCode(Integer idCode) {
+		this.idCode = idCode;
+	}
 	public String getCode() {
 		return code;
 	}

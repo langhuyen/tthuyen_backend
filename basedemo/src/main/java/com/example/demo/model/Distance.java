@@ -10,21 +10,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Distance extends BaseModel{
 	@Id
 	private String id;
-	private String srcCode;
-	private String desCode;
+	
+	private Integer srcCode;
+	private Integer desCode;
 	private Boolean isDriveBalance=true;
 	private Float distance;
 	private Float travelTime;
-	public String getSrcCode() {
+	public Integer getSrcCode() {
 		return srcCode;
 	}
-	public void setSrcCode(String srcCode) {
+	public void setSrcCode(Integer srcCode) {
 		this.srcCode = srcCode;
 	}
-	public String getDesCode() {
+	public Integer getDesCode() {
 		return desCode;
 	}
-	public void setDesCode(String desCode) {
+	public void setDesCode(Integer desCode) {
 		this.desCode = desCode;
 	}
 	public Boolean getIsDriveBalance() {

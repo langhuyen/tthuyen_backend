@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.model.BaseModel;
 
 //@Repository
-public interface  IBaseRepository<T extends BaseModel> extends MongoRepository<T,String>{
+public interface  IBaseRepository<T extends BaseModel,ID> extends MongoRepository<T,ID>{
 	
 	 List<T> findByType(String type);
 }

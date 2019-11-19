@@ -20,7 +20,7 @@ public class Instance extends BaseModel {
 	private String depotLocationCode;
 	private String status="Rảnh";
 	private List<String> returnDepotCodes;
-	private List<Interval>  intervals;
+	private List<Interval>  intervals;	
 	
 	public String getStatus() {
 		return status;
