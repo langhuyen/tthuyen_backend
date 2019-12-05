@@ -12,6 +12,7 @@ public class CustomerRequestRefModel{
 	private String id;
 	private String code;
 	private String type;
+	private Integer idCode;
 	private List<Entity> warehouseCode;
 	private List<Entity> portCode;
 	private List<Instance> containerCode;
@@ -24,6 +25,13 @@ public class CustomerRequestRefModel{
 	private Integer quantity;
 	private Date requestDate=new Date();
 	
+	
+	public Integer getIdCode() {
+		return idCode;
+	}
+	public void setIdCode(Integer idCode) {
+		this.idCode = idCode;
+	}
 	public String getCode() {
 		return code;
 	}

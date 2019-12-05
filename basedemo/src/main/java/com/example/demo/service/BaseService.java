@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.model.BaseModel;
 import com.example.demo.model.Entity;
+import com.example.demo.model.Instance;
 import com.example.demo.repository.IBaseRepository;
 
 
@@ -57,6 +58,11 @@ public class BaseService<T extends BaseModel,ID> implements IBaseService<T,ID> {
 	public List<T> getByType(String type) {
 		// TODO Auto-generated method stub
 		return  repo.findByType(type);
+	}
+	
+	public T getByCodeID(String key) {
+		// TODO Auto-generated method stub
+		return repo.findByIdCode(key);
 	}
 
 }

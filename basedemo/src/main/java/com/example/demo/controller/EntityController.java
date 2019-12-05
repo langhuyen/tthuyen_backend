@@ -26,50 +26,74 @@ import com.example.demo.service.IBaseService;
 
 import net.minidev.json.JSONObject;
 
-
 @RestController
 @RequestMapping("/entity")
-public class EntityController extends BaseController<Entity, String > {
-	@Autowired 
-	IBaseService<Distance,String> distanceService;
+public class EntityController extends BaseController<Entity, String> {
+	@Autowired
+	IBaseService<Distance, String> distanceService;
+	static final String KeyAPI1 = "AIzaSyBuBc81YVlifiWhiORZRxQhtS3m_kFCIHI";
+
+	// Chút bỏ cái key này nhé
+	static final String KeyAPI2 = "AIzaSyAzJdGMjcgSDs0wmCYPPg6YK9jG0vOY6_s";
+	static final String URL_API = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=";
 
 	
-//	@PostMapping("/insert")
-//	public ResponseModel insert(@RequestBody Entity entity){
-//		ResponseModel res=new ResponseModel();
-//		List<Entity> lst=new ArrayList<Entity>();
-//		try {
-//			String codeSys=((GenerateCodeService)codeService).getByOtherType(entity.getType().toString());
-//			if(entity.getCode().equals(codeSys)) {
-//				((GenerateCodeService)codeService).editType(entity.getType().toString());
-//				};
-//			Entity en=service.insertEntity(entity);
-//			lst.add(en);
-//			res.setData(lst);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			res.error();
-//			res.setMessage(e.toString());
-//		}
-//		return res;
-//	}
+	@PostMapping("/insert")
+	@Override
+	public  ResponseModel insert(@RequestBody Entity entity){
+		ResponseModel res=new ResponseModel();
+		List<Entity> lst=new ArrayList<Entity>();
+		try {
+			String codeSys=((GenerateCodeService)codeService).getByOtherType(entity.getType().toString());
+			if(entity.getCode().equals(codeSys)) {
+				((GenerateCodeService)codeService).editType(entity.getType().toString());
+				};
+				GenerateCode idCode=((GenerateCodeService)codeService).getIdCodeByType(entity.getType().toString());
+				entity.setIdCode(autoId.getNextSequence("auto_id"));
+			Entity en=service.insertEntity(entity);
+			lst.add(en);
+			doUpdateDistance(en);
+			res.setData(lst);
+		} catch (Exception e) {
+			// TODO: handle exception
+			res.error();
+			res.setMessage(e.toString());
+		}
+		return res;
+	}
 	
-	
+	@PostMapping("/update/postion")
+	public ResponseModel updatePosition(@RequestBody Entity entity) {
+		ResponseModel res = new ResponseModel();
+		List<Entity> lst = new ArrayList<Entity>();
+		try {
+			Entity en = service.editEntity(entity);
+			lst.add(en);
+			res.setData(lst);
+			doUpdateDistance(en);
+		} catch (Exception e) {
+			// TODO: handle exception
+			res.error();
+			res.setMessage(e.toString());
+		}
+		return res;
+	}
+
 	/***
 	 * Thực hiện Lấy danh sách các depot khách port và warehouse
 	 * 
 	 */
 	@GetMapping("/getDepot")
-	public ResponseModel getEntityMiddle(){
-		ResponseModel res=new ResponseModel();
-		List<Entity> lst=new ArrayList<Entity>();
+	public ResponseModel getEntityMiddle() {
+		ResponseModel res = new ResponseModel();
+		List<Entity> lst = new ArrayList<Entity>();
 		try {
-			
-			lst=((EntityService)service).getEntityMiddle();
-			if(lst.size()==0) {
+
+			lst = ((EntityService) service).getEntityMiddle();
+			if (lst.size() == 0) {
 				res.notFound();
-			}else {
-				
+			} else {
+
 				res.setData(lst);
 			}
 		} catch (Exception e) {
@@ -79,47 +103,13 @@ public class EntityController extends BaseController<Entity, String > {
 		}
 		return res;
 	}
-	 
-	    static final String KeyAPI1 = "AIzaSyCgBE4hSryEhlwDwTlIagZSJXY-wpp_-N0";
-	    static final String KeyAPI2 = "AIzaSyAzJdGMjcgSDs0wmCYPPg6YK9jG0vOY6_s";
-	    static final String URL_EMPLOYEES_JSON = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=";
-//	    		+ "Washington,DC&destinations=New+York+City,NY&key=AIzaSyCgBE4hSryEhlwDwTlIagZSJXY-wpp_-N0";
-	    
-	@GetMapping("/test")
-	public String getTest() {
-//		Date date=new Date();
-//		@Deprecated
-//	 	Date dateStart=new Date(date.getYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-//		Date dateEnd=new Date(date.getYear(), date.getMonth(), date.getDate(), 23, 59, 59);
-		/**
-		 * Thuc hien them 1 truog locationCode cho cac depot
-		 * 
-		 */
-//		 List<Entity> lst=service.getList();
-//		 Integer code=1000;
-//		 for(int x=0;x<lst.size();x++) {
-//			 Entity entity=lst.get(x);
-//			 entity.setLocationCode(++code);
-//			 service.editEntity(entity);
-//				try {
-//				
-//				Thread.sleep(100);
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			} 
-//		 }
-	        
-	        
-		 doUpdateDistance();
-		 return "OK";
-	}
-	
-	
+
+
 	/**
 	 * Thuc hien update khoang cach cac vi tri
 	 */
 	
-	  public void doUpdateDistance() 
+	  public void doUpdateDistance(Entity entity) 
 	    { 
 	  
 	        
@@ -127,29 +117,20 @@ public class EntityController extends BaseController<Entity, String > {
 	            public void run() 
 	            { 	 RestTemplate restTemplate = new RestTemplate();
 	   		 List<Entity> lst=service.getList();
-			 for(int x=0;x<lst.size()-1;x++) {
-				 Entity entity=lst.get(x);
-				 System.out.println(entity.getAddress());
-//				 continue;
-				 if(entity.getAddress().equals("KHO ANC")) continue;
-				 for(int k=x+1;k<lst.size();k++) {
-					 Entity entityNext=lst.get(k);
-					 if(entityNext.getAddress().equals("KHO ANC")) continue;
-					 List<Distance> distanceOld=((DistanceService)distanceService).findBySrcCode(entity.getLocationCode(),entityNext.getLocationCode());
-					 if(distanceOld.size()!=0) continue;
-					 
-//					 System.out.print();
-					 StringBuilder req=new StringBuilder(URL_EMPLOYEES_JSON);
+			 for(int x=0;x<lst.size();x++) {
+				 Entity entityOther=lst.get(x);
+				 if(entity.getId().equals(entityOther.getId()))continue;
+					
+					 StringBuilder req=new StringBuilder(URL_API);
 					 req.append(entity.getLatLng().getLat()+","+ entity.getLatLng().getLng());
 					 req.append("&destinations=");
-					 req.append(entityNext.getLatLng().getLat()+","+entityNext.getLatLng().getLng());
+					 req.append(entityOther.getLatLng().getLat()+","+entityOther.getLatLng().getLng());
 					 req.append("&key=");
 					 if(x%2==0) {
 						 req.append(KeyAPI1);
 						 
 					 }else {
 						 req.append(KeyAPI2);
-						 
 					 }
 					 try {
 						 Thread.sleep(1000);
@@ -158,14 +139,17 @@ public class EntityController extends BaseController<Entity, String > {
 						 if(result.getRows().get(0).getElements().get(0).getDistance()==null) continue;
 						 Float distance=result.getRows().get(0).getElements().get(0).getDistance().getValue();
 						 Float duration=result.getRows().get(0).getElements().get(0).getDuration().getValue();
+						
 						 Distance distanceInstance=new Distance();
 						 distanceInstance.setSrcCode(entity.getLocationCode());
-						 distanceInstance.setDesCode(entityNext.getLocationCode());
+						 distanceInstance.setDesCode(entityOther.getLocationCode());
 						 distanceInstance.setDistance(distance);
 						 distanceInstance.setTravelTime(duration);
+						
+						 
 						 Distance distanceRevert=new Distance();
 						 distanceRevert.setDesCode(entity.getLocationCode());
-						 distanceRevert.setSrcCode(entityNext.getLocationCode());
+						 distanceRevert.setSrcCode(entityOther.getLocationCode());
 						 distanceRevert.setDistance(distance);
 						 distanceRevert.setTravelTime(duration);
 						 distanceService.insertEntity(distanceInstance);
@@ -177,8 +161,7 @@ public class EntityController extends BaseController<Entity, String > {
 				 }
 			 }
 			
-	            } 
-	        }).start(); 
-	    } 
+	        }).start();
+}
 
 }

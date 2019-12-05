@@ -1,19 +1,31 @@
 package com.example.demo.model;
 
+/**
+ * Gôm các trường code :
+ * code: ,
+ * idCode là id kiểu số nguyên
+ * type: Loại thực thể 
+ * entity: depottruck,depottrailer,depotcontainer,port, warehouse
+ * instance: gồm có container,mooc,truck
+ *  
+ * @author huyen.tt166212
+ *
+ */
+
 public class BaseModel {
 
 	
 	protected String name;
-	protected String type;
 	protected String code;
-	private Integer idCode;
+	protected String type;
+	private String idCode;
 	
 	
 
-	public Integer getIdCode() {
+	public String getIdCode() {
 		return idCode;
 	}
-	public void setIdCode(Integer idCode) {
+	public void setIdCode(String idCode) {
 		this.idCode = idCode;
 	}
 	public String getCode() {

@@ -14,18 +14,23 @@ import com.example.demo.model.Instance;
 @Service
 public class InstanceService extends BaseService<Instance,String>{
 
-	/***
-	 * Lấy các thực thể rảnh của 1 loại
-	 */
+	
 
 	 @Autowired
 	    private MongoTemplate mongoTemplate;
 	
+	 
+	 /***
+		 * Lấy các thực thể  của 1 loại trừ các container ra 
+		 */
 	public  List<Instance> getInstanceFreeByType(){
 		  Aggregation aggregation = Aggregation.newAggregation(
-				  Aggregation.match(Criteria.where("type").ne("CONTAINER")),
-				  Aggregation.match(Criteria.where("status").is("Rảnh"))
+				  Aggregation.match(Criteria.where("type").ne("CONTAINER"))
+//				  ,Aggregation.match(Criteria.where("status").is("Rảnh"))
 				  );
 		return mongoTemplate.aggregate(aggregation, "instance", Instance.class).getMappedResults();
 	}
+
+
+	
 }

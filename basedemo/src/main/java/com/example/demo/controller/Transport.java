@@ -19,6 +19,8 @@ import com.example.demo.model.CustomerRequestRefModel;
 import com.example.demo.model.Instance;
 import com.example.demo.repository.IInstanceRepository;
 import com.example.demo.service.TransportService;
+//import com.example.demo.ultilities.AutoId;
+import com.example.demo.ultilities.AutoId;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
@@ -32,27 +34,26 @@ public class Transport {
 	@Autowired
 	IInstanceRepository repo;
 	
-	@PostMapping("/hello")
+	
+	@Autowired
+	AutoId autoId;
+	@PostMapping("/createdTrip")
 	public String createdTrip(@RequestBody List<CustomerRequestRefModel> customerRequestRefModels) throws ParseException {
 		service.createdTrip(customerRequestRefModels);
 	return "OK";
 	}
 	
-	@GetMapping("/hello")
+	@GetMapping("/getRouter")
 	 public List<Object> updateDb(){
 	return	service.getTruck();
-//		List<Instance> lst=repo.findAll();
-//		for(Instance item: lst) {
-//			Integer idCode=convertToIdCode(item.getCode());
-//			item.setIdCode(idCode);
-//			repo.save(item);
-//		}
-//		return "OK";
 	}
-
-	 static Integer convertToIdCode(String code) {
 		
-		return Integer.parseInt(code.replaceAll("[^0-9]", "")) ;
+	@GetMapping("/test")
+			
+	 public String convertToIdCode(String code) {
+		
+		return autoId.getNextSequence("huyen");
+//		return Integer.parseInt(code.replaceAll("[^0-9]", "")) ;
 	}
 
 }

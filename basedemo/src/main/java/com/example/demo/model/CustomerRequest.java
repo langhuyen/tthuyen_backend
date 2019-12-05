@@ -15,6 +15,7 @@ public class CustomerRequest extends BaseModel {
 	@Id
 	private String id;
 
+	
 	private String warehouseCode;
 	private String portCode;
 	private String containerCode;
@@ -26,6 +27,14 @@ public class CustomerRequest extends BaseModel {
 	private String containerTypeCode;
 	private Integer quantity;
 	private Date requestDate=new Date();
+	private Boolean isSchedule;
+	
+	public Boolean getIsSchedule() {
+		return isSchedule;
+	}
+	public void setIsSchedule(Boolean isSchedule) {
+		this.isSchedule = isSchedule;
+	}
 	public String getDepotContainerCode() {
 		return depotContainerCode;
 	}

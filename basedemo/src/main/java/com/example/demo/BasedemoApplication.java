@@ -22,22 +22,14 @@ import org.springframework.stereotype.Component;
 import com.example.demo.model.Instance;
 import com.example.demo.repository.IBaseRepository;
 import com.example.demo.repository.IInstanceRepository;
+import com.example.demo.ultilities.AutoId;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class, org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
 public class BasedemoApplication {
-//	private static IInstanceRepository repo;
-//	@Autowired
-//	public void setRepo(IInstanceRepository repo) {
-//		this.repo=repo;
-//	}
+
 	public static void main(String[] args) {
-		String pattern = "yyyy-MM-dd HH:mm:ss";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		String date = simpleDateFormat.format(new Date());
-		System.out.println(date);
-//		BasedemoApplication app=new BasedemoApplication();
-//		updateDb();
+
 		SpringApplication.run(BasedemoApplication.class, args);
 	}
 	
@@ -52,6 +44,6 @@ public class BasedemoApplication {
         return mongoTemplate;
  
     }
-
+	
 
 }

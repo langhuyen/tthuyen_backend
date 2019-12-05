@@ -31,8 +31,31 @@ public class CustomerRequestService extends BaseService<CustomerRequest,String>{
 	 */
 
 	 @Autowired
-	    private MongoTemplate mongoTemplate;
+	   MongoTemplate mongoTemplate;
 
+	 
+	 public boolean updateStatusIsSchedule(String id,Boolean isSchedule) {
+		 CustomerRequest req=repo.findById(id).get();
+		 if(req!=null) {
+			 try {
+				 req.setIsSchedule(isSchedule);
+				repo.save(req);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			 return true;
+		 }
+		 return false;
+		 
+	 }
+	 
+	 
+	 /**
+	  * Lấy danh sach các customerrequest phục vụ cho việc lập lịch
+	  * @param type
+	  * @return
+	  */
 	 
 	 public List<CustomerRequestRefModel> getByTypeList(String type){
 		

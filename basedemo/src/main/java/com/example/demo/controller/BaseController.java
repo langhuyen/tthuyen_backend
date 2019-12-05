@@ -19,6 +19,7 @@ import com.example.demo.repository.IBaseRepository;
 import com.example.demo.service.BaseService;
 import com.example.demo.service.GenerateCodeService;
 import com.example.demo.service.IBaseService;
+import com.example.demo.ultilities.AutoId;
 
 
 public class BaseController<T extends BaseModel,ID extends Serializable> {
@@ -29,6 +30,9 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 	@Autowired 
 	IBaseService<GenerateCode,String> codeService;
 
+	
+	@Autowired
+	AutoId autoId;
 	
 	@GetMapping("/get")
 	public ResponseModel get(){
@@ -107,9 +111,7 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 				((GenerateCodeService)codeService).editType(entity.getType().toString());
 				};
 				GenerateCode idCode=((GenerateCodeService)codeService).getIdCodeByType(entity.getType().toString());
-				entity.setIdCode(idCode.getIdCode());
-				idCode.setIdCode(idCode.getIdCode()+1);
-				((GenerateCodeService)codeService).editEntity(idCode);
+				entity.setIdCode(autoId.getNextSequence("auto_id"));
 			T en=service.insertEntity(entity);
 			lst.add(en);
 			res.setData(lst);

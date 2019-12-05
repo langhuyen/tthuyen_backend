@@ -23,7 +23,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleCorsFilter implements Filter {
-//middeware
+/**
+ * TThuyen thực hiện filter sử lý cors
+ */
 	
 
 	  public SimpleCorsFilter() {
