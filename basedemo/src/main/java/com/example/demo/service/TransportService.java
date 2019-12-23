@@ -169,7 +169,7 @@ public class TransportService {
 					 * Thực hiện update các dữ liệu liên quan với mooc,truck,container với thời gian
 					 * được lập lịch
 					 */
-					updateInstance(json.get("truck"), (List<Object>) json.get("nodes"));
+//					updateInstance(json.get("truck"), (List<Object>) json.get("nodes"));
 
 				} catch (Exception e) {
 					// TODO: handle exception

@@ -23,6 +23,7 @@ import com.example.demo.service.DistanceService;
 import com.example.demo.service.EntityService;
 import com.example.demo.service.GenerateCodeService;
 import com.example.demo.service.IBaseService;
+import com.example.demo.ultilities.Auth;
 
 import net.minidev.json.JSONObject;
 
@@ -31,10 +32,15 @@ import net.minidev.json.JSONObject;
 public class EntityController extends BaseController<Entity, String> {
 	@Autowired
 	IBaseService<Distance, String> distanceService;
-	static final String KeyAPI1 = "AIzaSyBuBc81YVlifiWhiORZRxQhtS3m_kFCIHI";
+	
+	@Autowired
+	Auth auth;
+
+	static final String KeyAPI1 = "AIzaSyD6PK724reFAmiEywQIYAD2_VccqhQovMI";
 
 	// Chút bỏ cái key này nhé
-	static final String KeyAPI2 = "AIzaSyAzJdGMjcgSDs0wmCYPPg6YK9jG0vOY6_s";
+	static final String KeyAPI2 = "AIzaSyDfM32ErvYepZo5iNFjFINO2g4EaKwTkIg";
+	static final String KeyAPI3 = "AIzaSyD-eP4SUSZxXk4RxZ6K9rrv574JT4v6t4w";
 	static final String URL_API = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=";
 
 	
@@ -49,7 +55,12 @@ public class EntityController extends BaseController<Entity, String> {
 				((GenerateCodeService)codeService).editType(entity.getType().toString());
 				};
 				GenerateCode idCode=((GenerateCodeService)codeService).getIdCodeByType(entity.getType().toString());
-				entity.setIdCode(autoId.getNextSequence("auto_id"));
+				String id=autoId.getNextSequence("auto_id");
+				entity.setIdCode(id);
+				entity.setLocationCode(Integer.valueOf(id) );
+				//Set người dùng
+				String userId=auth.getAuth("id");
+				entity.setUseId(userId);
 			Entity en=service.insertEntity(entity);
 			lst.add(en);
 			doUpdateDistance(en);
@@ -126,14 +137,16 @@ public class EntityController extends BaseController<Entity, String> {
 					 req.append("&destinations=");
 					 req.append(entityOther.getLatLng().getLat()+","+entityOther.getLatLng().getLng());
 					 req.append("&key=");
-					 if(x%2==0) {
+					 if(x%3==0) {
 						 req.append(KeyAPI1);
 						 
-					 }else {
+					 }else if(x%3==1){
 						 req.append(KeyAPI2);
+					 }else {
+						 req.append(KeyAPI3);
+						 
 					 }
 					 try {
-						 Thread.sleep(1000);
 						 ResultModel result = restTemplate.getForObject(req.toString(),ResultModel.class);
 						 System.out.println(result.getStatus());
 						 if(result.getRows().get(0).getElements().get(0).getDistance()==null) continue;

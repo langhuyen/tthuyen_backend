@@ -172,7 +172,7 @@ public class CustomerRequestService extends BaseService<CustomerRequest,String>{
 							return new Document("$addFields",new Document("containerCode",new Document("$toObjectId","$containerCode")));
 						}
 					},
-		    		Aggregation.match(Criteria.where("requestDate").lte(dateEnd).gte(dateStart)) ,
+		    		Aggregation.match(Criteria.where("requestDate").lte(dateEnd).gte(dateStart).and("isSchedule").is(false)) ,
 		    		lookupOperation,
 		    		lookupPortCode,
 		    		lookupContainer);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.example.demo.repository.IBaseRepository;
 import com.example.demo.service.BaseService;
 import com.example.demo.service.GenerateCodeService;
 import com.example.demo.service.IBaseService;
+import com.example.demo.ultilities.Auth;
 import com.example.demo.ultilities.AutoId;
 
 
@@ -29,6 +31,9 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 
 	@Autowired 
 	IBaseService<GenerateCode,String> codeService;
+	
+	@Autowired
+	Auth auth;
 
 	
 	@Autowired
@@ -74,8 +79,29 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		}
 		return res;
 	}
-	@GetMapping("/detail/:{id}")
-	public ResponseModel getById(@PathVariable ID id){
+//	//Phân trang
+//	@GetMapping("/getType/:{type}")
+//	public ResponseModel getByType(@PathVariable String type){
+//		ResponseModel res=new ResponseModel();
+//		List<T> lst=new ArrayList<T>();
+//		try {
+//			
+//			lst=service.getByType(type);
+//			if(lst.size()==0) {
+//				res.notFound();
+//			}else {
+//				
+//				res.setData(lst);
+//			}
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			res.error();
+//			res.setMessage(e.toString());
+//		}
+//		return res;
+//	}
+	@GetMapping("/detail")
+	public ResponseModel getById(@Param(value="id") ID id){
 		ResponseModel res=new ResponseModel();
 		List<T> lst=new ArrayList<T>();
 		try {
@@ -106,12 +132,15 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		ResponseModel res=new ResponseModel();
 		List<T> lst=new ArrayList<T>();
 		try {
+			String userId=auth.getAuth("id");
+			entity.setUseId(userId);
 			String codeSys=((GenerateCodeService)codeService).getByOtherType(entity.getType().toString());
 			if(entity.getCode().equals(codeSys)) {
 				((GenerateCodeService)codeService).editType(entity.getType().toString());
 				};
 				GenerateCode idCode=((GenerateCodeService)codeService).getIdCodeByType(entity.getType().toString());
 				entity.setIdCode(autoId.getNextSequence("auto_id"));
+				entity.setUseId(auth.getAuth("id"));
 			T en=service.insertEntity(entity);
 			lst.add(en);
 			res.setData(lst);
@@ -154,4 +183,29 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		return res;
 	}
 
+	/**
+	 * Hàm thực hiện fulltextsearch'
+	 * 
+	 */
+	@GetMapping("/search")
+	public ResponseModel search(@Param(value="type") String type, @Param(value="queryString") String queryString) {
+		ResponseModel res=new ResponseModel();
+		List<T> lst=new ArrayList<T>();
+		try {
+			
+			lst=service.search(type, queryString);
+			if(lst.size()==0) {
+				res.notFound();
+			}else {
+				
+				res.setData(lst);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			res.error();
+			res.setMessage(e.toString());
+		}
+		return res;
+	}
+	
 }

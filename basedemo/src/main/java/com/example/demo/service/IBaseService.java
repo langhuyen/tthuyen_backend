@@ -13,4 +13,5 @@ public interface IBaseService<T extends BaseModel,ID> {
 	public List<T> getList();
 	public T getById(ID id);
 	public boolean delete(T entity);
+	public List<T> search(String type, String queryString);
 }

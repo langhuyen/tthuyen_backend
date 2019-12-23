@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.BaseModel;
@@ -17,4 +18,7 @@ public interface  IBaseRepository<T extends BaseModel,ID> extends MongoRepositor
 	T findByCode(String key);
 
 	T findByIdCode(String key);
+	
+	@Query("{$text:{$search:\"\\\"?0\\\"\",$caseSensitive:false},type:\"?1\"}")
+	List<T> searchByField(String queryString,String type);
 }

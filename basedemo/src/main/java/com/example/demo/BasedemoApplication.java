@@ -17,6 +17,8 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.model.Instance;
@@ -25,14 +27,17 @@ import com.example.demo.repository.IInstanceRepository;
 import com.example.demo.ultilities.AutoId;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class, org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
 public class BasedemoApplication {
 
 	public static void main(String[] args) {
 
 		SpringApplication.run(BasedemoApplication.class, args);
 	}
-	
+	 @Bean
+	 PasswordEncoder passwordEncoder() {
+	        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
 	@Bean
     public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory, MongoMappingContext context) {
  

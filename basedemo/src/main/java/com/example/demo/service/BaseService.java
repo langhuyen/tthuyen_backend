@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.model.BaseModel;
 import com.example.demo.model.Entity;
@@ -65,4 +66,12 @@ public class BaseService<T extends BaseModel,ID> implements IBaseService<T,ID> {
 		return repo.findByIdCode(key);
 	}
 
+	
+
+
+	@Override
+	public List<T> search(String type, String queryString) {
+		// TODO Auto-generated method stub
+		return repo.searchByField(queryString,type);
+	}
 }

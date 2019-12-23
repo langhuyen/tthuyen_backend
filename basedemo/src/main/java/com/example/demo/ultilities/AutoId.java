@@ -39,7 +39,7 @@ public class AutoId {
 	        Document updateQuery1 = new Document("$inc", increase1);
 	        Document result = collection.findOneAndUpdate(searchQuery1, updateQuery1);
 	 
-	        return (String)result.get("seq");
+	        return (String)result.get("seq").toString();
 	 
 	    }
 }

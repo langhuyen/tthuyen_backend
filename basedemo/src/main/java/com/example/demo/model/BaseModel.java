@@ -19,9 +19,29 @@ public class BaseModel {
 	protected String code;
 	protected String type;
 	private String idCode;
+	private String userId;
+	private String description;
+	
+	
+	
 	
 	
 
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUseId(String userId) {
+		this.userId = userId;
+	}
 	public String getIdCode() {
 		return idCode;
 	}

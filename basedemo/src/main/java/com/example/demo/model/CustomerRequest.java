@@ -25,9 +25,9 @@ public class CustomerRequest extends BaseModel {
 	private Date earlyDeliveryDateTime;
 	private Date lateDeliveryDateTime;
 	private String containerTypeCode;
-	private Integer quantity;
+	private Integer weight;
 	private Date requestDate=new Date();
-	private Boolean isSchedule;
+	private Boolean isSchedule=false;
 	
 	public Boolean getIsSchedule() {
 		return isSchedule;
@@ -96,10 +96,10 @@ public class CustomerRequest extends BaseModel {
 		this.containerTypeCode = containerTypeCode;
 	}
 	public Integer getQuantity() {
-		return quantity;
+		return weight;
 	}
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
+	public void setQuantity(Integer weight) {
+		this.weight = weight;
 	}
 	public Date getRequestDate() {
 		return requestDate;
@@ -109,7 +109,7 @@ public class CustomerRequest extends BaseModel {
 	}
 	public CustomerRequest(String id, String warehouseCode, String portCode, String containerCode,
 			Date earlyPickupDateTime, Date latePickupDateTime, Date earlyDeliveryDateTime, Date lateDeliveryDateTime,
-			String containerTypeCode, Integer quantity, Date requestDate) {
+			String containerTypeCode, Integer weight, Date requestDate) {
 		super();
 		this.id = id;
 		this.warehouseCode = warehouseCode;
@@ -120,7 +120,7 @@ public class CustomerRequest extends BaseModel {
 		this.earlyDeliveryDateTime = earlyDeliveryDateTime;
 		this.lateDeliveryDateTime = lateDeliveryDateTime;
 		this.containerTypeCode = containerTypeCode;
-		this.quantity = quantity;
+		this.weight = weight;
 		this.requestDate = requestDate;
 	}
 	public CustomerRequest() {
