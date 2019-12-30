@@ -9,11 +9,17 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Distance;
+import com.example.demo.model.Instance;
 import com.example.demo.repository.IDistanceRepository;
 
 @Service
 public class DistanceService extends BaseService<Distance,String>{
 	
+	public DistanceService() {
+		this.entityClass=Distance.class;
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * Tim cac doi tuong co srcCode=srcCode và có desCode=desCode
 	 * @param srcCode

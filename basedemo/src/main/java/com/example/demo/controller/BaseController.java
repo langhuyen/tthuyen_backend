@@ -65,7 +65,7 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		List<T> lst=new ArrayList<T>();
 		try {
 			
-			lst=service.getByType(type);
+			lst=service.getByType(type,auth.getAuth("id"));
 			if(lst.size()==0) {
 				res.notFound();
 			}else {
@@ -79,27 +79,32 @@ public class BaseController<T extends BaseModel,ID extends Serializable> {
 		}
 		return res;
 	}
-//	//Phân trang
-//	@GetMapping("/getType/:{type}")
-//	public ResponseModel getByType(@PathVariable String type){
-//		ResponseModel res=new ResponseModel();
-//		List<T> lst=new ArrayList<T>();
-//		try {
-//			
-//			lst=service.getByType(type);
-//			if(lst.size()==0) {
-//				res.notFound();
-//			}else {
-//				
-//				res.setData(lst);
-//			}
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			res.error();
-//			res.setMessage(e.toString());
-//		}
-//		return res;
-//	}
+	//Phân trang
+	@GetMapping("/getTypePaging/:{type}")
+	public ResponseModel getByTypePaging(@PathVariable String type,@Param(value="pageSize")int pageSize,@Param(value="pageSize")int pageIndex){
+		ResponseModel res=new ResponseModel();
+		List<T> lst=new ArrayList<T>();
+		try {
+			
+			lst=service.getByTypePaging(type, auth.getAuth("id"), pageIndex, pageSize);
+			//Tong so trang
+			int count=service.countByType(type,auth.getAuth("id"));
+			
+			System.out.println(count);
+			if(lst.size()==0) {
+				res.notFound();
+			}else {
+				
+				res.setData(lst);
+				res.setOther("totalPage", count);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			res.error();
+			res.setMessage(e.toString());
+		}
+		return res;
+	}
 	@GetMapping("/detail")
 	public ResponseModel getById(@Param(value="id") ID id){
 		ResponseModel res=new ResponseModel();

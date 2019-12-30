@@ -15,8 +15,14 @@ import com.example.demo.model.Instance;
 public class InstanceService extends BaseService<Instance,String>{
 
 	
+	
+	 public InstanceService() {
+		this.entityClass=Instance.class;
+		// TODO Auto-generated constructor stub
+	}
 
-	 @Autowired
+
+	@Autowired
 	    private MongoTemplate mongoTemplate;
 	
 	 

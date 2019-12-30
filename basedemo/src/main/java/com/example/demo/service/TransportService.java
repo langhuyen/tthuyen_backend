@@ -21,7 +21,10 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 import org.springframework.data.mongodb.core.aggregation.Field;
+import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ import com.example.demo.model.Interval;
 import com.example.demo.model.TruckRoute;
 import com.example.demo.repository.IBaseRepository;
 import com.example.demo.repository.ITruckRouterRepository;
+import com.example.demo.ultilities.Auth;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -53,6 +57,8 @@ public class TransportService {
 	DistanceService distanceService;
 	@Autowired
 	ITruckRouterRepository truckRepo;
+	@Autowired
+	Auth auth;
 	ClassLoader classLoader = getClass().getClassLoader();
 	String path = classLoader.getResource("JsonRequest").getPath().replaceFirst("/", "");
 
@@ -61,9 +67,6 @@ public class TransportService {
 	
 	@Autowired
 	InstanceService instanceService;
-
-//	 @Autowired
-//	    private MongoTemplate mongoTemplate;
 
 	/**
 	 * Tra ve cac truck_router
@@ -113,6 +116,73 @@ public class TransportService {
 
 		return trucks;
 	}
+	
+	public int countByUserIdByTime(Date fromDate,Date toDate) {
+		 @Deprecated
+		 Date dateStart=new Date(fromDate.getYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+		 @Deprecated
+		 Date dateEnd=new Date(toDate.getYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59);
+		return truckRepo.countByUserIdByTime(dateStart, dateEnd, auth.getAuth("id"));
+	}
+	
+	public List<Object> getTruckPaging(Date fromDate,Date toDate,int pageIndex,int pageSize) {
+		 @Deprecated
+		 Date dateStart=new Date(fromDate.getYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+		 @Deprecated
+		 Date dateEnd=new Date(toDate.getYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59);
+		
+		LookupOperation lookupOperationTruck = LookupOperation.newLookup().from("instance").localField("truck.code")
+				.foreignField("idCode").as("truck.instance");
+		LookupOperation lookupOperation = LookupOperation.newLookup().from("entity").localField("locationCode")
+				.foreignField("locationCode").as("nodes.address");
+		LookupOperation lookupOperationMoocCode = LookupOperation.newLookup().from("instance")
+				.localField("nodes.moocCode").foreignField("idCode").as("nodes.mooc");
+		
+		LookupOperation lookupOperationContainerCode = LookupOperation.newLookup().from("instance")
+				.localField("nodes.containerCode").foreignField("idCode").as("nodes.container");
+		AggregationOperation ac = new AggregationOperation() {
+			
+			@Override
+			public Document toDocument(AggregationOperationContext context) {
+				// TODO Auto-generated method stub
+				JSONObject obj = new JSONObject();
+				obj.put("_id", "$_id");
+				obj.put("nbStops", new Document("$first", "$nbStops"));
+				obj.put("nodes", new Document("$push", "$nodes"));
+				obj.put("truck", new Document("$first", "$truck"));
+				return new Document("$group", new Document(obj));
+			}
+		};
+		
+		LimitOperation limit=new LimitOperation(pageSize);
+		SkipOperation offset=new SkipOperation(5);
+		
+		@SuppressWarnings("deprecation")
+		Aggregation aggregation = Aggregation.newAggregation(
+				
+				Aggregation.match(Criteria.where("createdDate").gte(dateStart).lte(dateEnd).and("userId").is(auth.getAuth("id"))),
+				Aggregation.unwind("nodes"), new AggregationOperation() {
+			
+			@Override
+			public Document toDocument(AggregationOperationContext context) {
+				// TODO Auto-generated method stub
+				
+				return new Document("$addFields",
+						new Document("locationCode", new Document("$toDecimal", "$nodes.locationCode")));
+			}
+		}, lookupOperationTruck, lookupOperation, lookupOperationMoocCode, lookupOperationContainerCode, ac,
+				Aggregation.skip((pageIndex-1)*pageSize),
+				Aggregation.limit(pageSize)
+//		    		ac2
+				
+				);
+		
+//		aggregation.skip((pageIndex-1)*pageSize );
+//		aggregation.limit(pageSize);
+		List<Object> trucks = mongoTemplate.aggregate(aggregation, "truck_router", Object.class).getMappedResults();
+		
+		return trucks;
+	}
 
 	/**
 	 * Đọc kết quả và ghi vào db update db các contaner,mooc,truck với thời gian
@@ -159,17 +229,19 @@ public class TransportService {
 				try {
 					JSONObject json = (JSONObject) item;
 					TruckRoute truck = new TruckRoute();
+					truck.setUserId(auth.getAuth("id"));
 					truck.setTruck(json.get("truck"));
 					truck.setNodes((List<Object>) json.get("nodes"));
 					truck.setNbStops((Integer) json.get("nbStops"));
 					truck.setTravelTime((Integer) json.get("travelTime"));
 					truckRepo.insert(truck);
-
+					
 					/**
 					 * Thực hiện update các dữ liệu liên quan với mooc,truck,container với thời gian
 					 * được lập lịch
 					 */
-//					updateInstance(json.get("truck"), (List<Object>) json.get("nodes"));
+				
+					updateInstance(json.get("truck"), (List<Object>) json.get("nodes"));
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -233,14 +305,20 @@ public class TransportService {
 			String key=entry.getKey() ;
 			//Cập nhật các đối tượng 
 //			f
-			Instance container=instanceService.getByCodeID(key);
+			Instance container=instanceService.getByCodeID("CONTAINER",key);
 			List<Interval> interval=container.getIntervals();
 			Interval intervalAdd=new Interval();
-			intervalAdd.setDateStart((java.sql.Date)value.get("dateStart"));
-			intervalAdd.setDateEnd((java.sql.Date)value.get("dateEnd"));
+			if(interval==null) interval=new ArrayList<>();
+			intervalAdd.setDateStart((Date)value.get("dateStart"));
+			intervalAdd.setDateEnd((Date)value.get("dateEnd"));
 			interval.add(intervalAdd);
 			container.setIntervals(interval);
-			instanceService.editEntity(container);
+			try {
+				
+				instanceService.editEntity(container);
+			}catch(Exception ex) {
+				
+			}
 			
 			
 		}
@@ -249,14 +327,21 @@ public class TransportService {
 			JSONObject value= entry.getValue();
 			String key=entry.getKey() ;
 			//Cập nhật các đối tượng 
-			Instance mooc=instanceService.getByCodeID(key);
+			Instance mooc=instanceService.getByCodeID("MOOC",key);
 			List<Interval> interval=mooc.getIntervals();
+			if(interval==null) interval=new ArrayList<>();
 			Interval intervalAdd=new Interval();
-			intervalAdd.setDateStart((java.sql.Date)value.get("dateStart"));
-			intervalAdd.setDateEnd((java.sql.Date)value.get("dateEnd"));
+			intervalAdd.setDateStart((Date)value.get("dateStart"));
+			intervalAdd.setDateEnd((Date)value.get("dateEnd"));
 			interval.add(intervalAdd);
 			mooc.setIntervals(interval);
-			instanceService.editEntity(mooc);
+			try {
+				
+				
+				instanceService.editEntity(mooc);
+			}catch(Exception ex) {
+				
+			}
 		}
 		
 		//Cập nhật truck
@@ -266,13 +351,21 @@ public class TransportService {
 		Date startDate=getDateLocal(itemStart);
 		Date endDate=getDateLocal(itemEnd);
 		Interval intervalAdd=new Interval();
-		intervalAdd.setDateStart((java.sql.Date)startDate);
-		intervalAdd.setDateEnd((java.sql.Date)endDate);
-		Instance truckDb=instanceService.getByCodeID(((JSONObject)truck).getAsString("code"));
+		intervalAdd.setDateStart((Date)startDate);
+		intervalAdd.setDateEnd((Date)endDate);
+		Instance truckDb=instanceService.getByCodeID("TRUCK",((JSONObject)truck).getAsString("code"));
 		List<Interval> interval=truckDb.getIntervals();
+		if(interval==null) interval=new ArrayList<>();
 		interval.add(intervalAdd);
 		truckDb.setIntervals(interval);
-		instanceService.editEntity(truckDb);
+		
+		try {
+			
+			
+			instanceService.editEntity(truckDb);
+		}catch(Exception ex) {
+			
+		}
 
 	}
 
@@ -311,8 +404,8 @@ public class TransportService {
 	 * @param idLst
 	 */
 	private JSONObject convertToInstance() {
-		List<Instance> lstMooc = instanceRepo.findByType("MOOC");
-		List<Instance> lstTruck = instanceRepo.findByType("TRUCK");
+		List<Instance> lstMooc = instanceRepo.findByType("MOOC",auth.getAuth("id"));
+		List<Instance> lstTruck = instanceRepo.findByType("TRUCK",auth.getAuth("id"));
 		JSONObject result = new JSONObject();
 		List<JSONObject> moocArr = new ArrayList<>();
 		for (int i = 0; i < lstMooc.size(); i++) {
@@ -354,9 +447,9 @@ public class TransportService {
 	 * @return
 	 */
 	private JSONObject convertToDepot() {
-		List<Entity> lstDepotTruck = entityRepo.findByType("DEPOTTRUCK");
-		List<Entity> lstDepotContainer = entityRepo.findByType("DEPOTCONTAINER");
-		List<Entity> lstDepotTrailer = entityRepo.findByType("DEPOTTRAILER");
+		List<Entity> lstDepotTruck = entityRepo.findByType("DEPOTTRUCK",auth.getAuth("id"));
+		List<Entity> lstDepotContainer = entityRepo.findByType("DEPOTCONTAINER",auth.getAuth("id"));
+		List<Entity> lstDepotTrailer = entityRepo.findByType("DEPOTTRAILER",auth.getAuth("id"));
 		JSONObject result = new JSONObject();
 		List<JSONObject> dpTruckArr = new ArrayList<>();
 		for (Entity dpTruck : lstDepotTruck) {
@@ -394,7 +487,7 @@ public class TransportService {
 
 	public void createdTrip(List<CustomerRequestRefModel> customerRequestRefModels) {
 		JSONObject jsonObjec = new JSONObject();
-
+			
 		String pattern = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		List<JSONObject> ildArr = new ArrayList<>();
@@ -405,7 +498,7 @@ public class TransportService {
 		List<JSONObject> portArr = new ArrayList<>();
 		List<JSONObject> containerArr = new ArrayList<>();
 		for (int i = 0; i < customerRequestRefModels.size(); i++) {
-
+			
 			CustomerRequestRefModel item = customerRequestRefModels.get(i);
 			/**
 			 * Update cac request coi như đã được lập lịch thành công
@@ -547,19 +640,19 @@ public class TransportService {
 		List<Distance> distance = distanceService.getList();
 		result.put("distance", distance);
 		result.put("params", getParams());
-		// Write JSON file
+		String name="test"+new Date().getTime();
 		try {
-			FileWriter file = new FileWriter(path + "/test.json");
+			FileWriter file = new FileWriter(path + "/"+name+".json");
 
 			file.write(result.toJSONString());
 			file.flush();
-			excutedAlgorithm("test");
+			excutedAlgorithm(name);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		ReadFileAndWriteToDB("test");
+		ReadFileAndWriteToDB(name);
 	}
 
 	private JSONObject getParams() {

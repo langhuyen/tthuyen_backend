@@ -25,6 +25,7 @@ import com.example.demo.model.Instance;
 import com.example.demo.repository.IBaseRepository;
 import com.example.demo.repository.IInstanceRepository;
 import com.example.demo.ultilities.AutoId;
+import com.mongodb.MongoClientOptions;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
@@ -49,6 +50,17 @@ public class BasedemoApplication {
         return mongoTemplate;
  
     }
+	  @Bean
+	    public MongoClientOptions mongoOptions() {
+	        return MongoClientOptions.builder()
+	        		.connectTimeout(1000 * 120)
+	        		.socketTimeout(0)
+	        		.cursorFinalizerEnabled(false)
+	        		
+	        		.build();
+	    }
+	  
+
 	
 
 }

@@ -1,13 +1,15 @@
 package com.example.demo.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ResponseModel {
 	
 	public boolean success;
 	public int code;
 	public String message;
-	public List<?> data;
+	public Map<String,Object> data=new HashMap<>();
 	public ResponseModel() {
 		this.code=0;//Thành công;
 		this.success=true;
@@ -42,11 +44,14 @@ public class ResponseModel {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public List<?> getData() {
+	public Map<String, ?> getData() {
 		return data;
 	}
 	public void setData(List<?> data) {
-		this.data = data;
+		this.data.put("data", data);
+	}
+	public void setOther(String key,Object data) {
+		this.data.put(key, data);
 	}
 		
 	

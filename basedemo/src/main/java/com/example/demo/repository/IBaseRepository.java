@@ -13,12 +13,17 @@ import com.example.demo.model.Instance;
 //@Repository
 public interface  IBaseRepository<T extends BaseModel,ID> extends MongoRepository<T,ID>{
 	
-	 List<T> findByType(String type);
-
+	@Query("{type:?0,userId:?1}")
+	 List<T> findByType(String type,String id);
+	
+	@Query("{type:?0,userId:?1}")
 	T findByCode(String key);
-
-	T findByIdCode(String key);
+	@Query("{type:?0,idCode:?1}")
+	T findByIdCode(String type,String key);
 	
 	@Query("{$text:{$search:\"\\\"?0\\\"\",$caseSensitive:false},type:\"?1\"}")
 	List<T> searchByField(String queryString,String type);
+	@Query(value="{type:?0,userId:?1}",count=true)
+	int countByType(String type, String userId);
+	int countByUserId(String userId);
 }

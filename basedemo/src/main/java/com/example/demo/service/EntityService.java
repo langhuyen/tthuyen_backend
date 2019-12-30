@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.model.Distance;
 import com.example.demo.model.Entity;
 import com.example.demo.model.Instance;
 import com.example.demo.repository.IBaseRepository;
@@ -15,6 +16,11 @@ import com.example.demo.repository.IEntityRepository;
 
 @Service
 public class EntityService extends BaseService<Entity,String> {
+
+	public EntityService() {
+		this.entityClass=Entity.class;
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * Lay danh sach cac depot không phải port và warehouse
