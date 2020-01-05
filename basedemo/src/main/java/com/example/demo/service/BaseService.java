@@ -81,9 +81,9 @@ public class BaseService<T extends BaseModel,ID> implements IBaseService<T,ID> {
 		return  repo.findByType(type,userID);
 	}
 	
-	public T getByCodeID(String type,String key) {
+	public T getByCodeID(String type,String key,String userId) {
 		// TODO Auto-generated method stub
-		return repo.findByIdCode(type, key);
+		return repo.findByIdCode(type, key, userId);
 	}
 
 	

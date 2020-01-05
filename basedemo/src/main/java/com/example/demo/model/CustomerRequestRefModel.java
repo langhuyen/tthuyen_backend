@@ -22,10 +22,18 @@ public class CustomerRequestRefModel{
 	private Date earlyDeliveryDateTime;
 	private Date lateDeliveryDateTime;
 	private String containerTypeCode;
-	private Integer quantity;
+	private Integer weight;
 	private Date requestDate=new Date();
+	private boolean isSchedule;
 	
 	
+	
+	public boolean isSchedule() {
+		return isSchedule;
+	}
+	public void setSchedule(boolean isSchedule) {
+		this.isSchedule = isSchedule;
+	}
 	public Integer getIdCode() {
 		return idCode;
 	}
@@ -104,11 +112,11 @@ public class CustomerRequestRefModel{
 	public void setContainerTypeCode(String containerTypeCode) {
 		this.containerTypeCode = containerTypeCode;
 	}
-	public Integer getQuantity() {
-		return quantity;
+	public Integer getWeight() {
+		return weight;
 	}
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
+	public void setWeight(Integer weight) {
+		this.weight = weight;
 	}
 	public Date getRequestDate() {
 		return requestDate;

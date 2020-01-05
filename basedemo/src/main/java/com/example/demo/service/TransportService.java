@@ -125,6 +125,11 @@ public class TransportService {
 		return truckRepo.countByUserIdByTime(dateStart, dateEnd, auth.getAuth("id"));
 	}
 	
+	public int countByUserId(String userId) {
+		
+		return truckRepo.countByUserId(userId);
+	}
+	
 	public List<Object> getTruckPaging(Date fromDate,Date toDate,int pageIndex,int pageSize) {
 		 @Deprecated
 		 Date dateStart=new Date(fromDate.getYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
@@ -221,10 +226,50 @@ public class TransportService {
 			Object obj = jsonParser.parse(reader);
 
 			JSONObject data = (JSONObject) obj;
+			
+			//Thuc hien update trang thai cac yeu cau chua duoc thuc hien.
+			
+			JSONArray unscheduledExEmptyRequests = (JSONArray) data.get("unscheduledExEmptyRequests");
+			JSONArray unscheduledExLadenRequests = (JSONArray) data.get("unscheduledExLadenRequests");
+			JSONArray unscheduledImEmptyRequests = (JSONArray) data.get("unscheduledImEmptyRequests");
+			JSONArray unscheduledImLadenRequests = (JSONArray) data.get("unscheduledImLadenRequests");
+			
 			JSONArray truckRouteRaw = (JSONArray) data.get("truckRoutes");
 			/**
 			 * Thực hiện lưu lộ trình các truck_router của 1 lần gọi request
 			 */
+			for (Object item : unscheduledExEmptyRequests) {
+				try {
+					JSONObject json = (JSONObject) item;
+					reqService.updateStatusIsScheduleByCodeID(json.getAsString("id"), auth.getAuth("id"), false);
+				}catch(Exception ex) {
+					
+				}
+			}
+			for (Object item : unscheduledExLadenRequests) {
+				try {
+					JSONObject json = (JSONObject) item;
+					reqService.updateStatusIsScheduleByCodeID(json.getAsString("id"), auth.getAuth("id"), false);
+				}catch(Exception ex) {
+					
+				}
+			}
+			for (Object item : unscheduledImEmptyRequests) {
+				try {
+					JSONObject json = (JSONObject) item;
+					reqService.updateStatusIsScheduleByCodeID( json.getAsString("id"), auth.getAuth("id"), false);
+				}catch(Exception ex) {
+					
+				}
+			}
+			for (Object item : unscheduledImLadenRequests) {
+				try {
+					JSONObject json = (JSONObject) item;
+					reqService.updateStatusIsScheduleByCodeID( json.getAsString("id"), auth.getAuth("id"), false);
+				}catch(Exception ex) {
+					
+				}
+			}
 			for (Object item : truckRouteRaw) {
 				try {
 					JSONObject json = (JSONObject) item;
@@ -248,6 +293,7 @@ public class TransportService {
 					e.printStackTrace();
 				}
 			}
+			
 
 			/**
 			 * 
@@ -305,7 +351,8 @@ public class TransportService {
 			String key=entry.getKey() ;
 			//Cập nhật các đối tượng 
 //			f
-			Instance container=instanceService.getByCodeID("CONTAINER",key);
+			Instance container=instanceService.getByCodeID("CONTAINER",key,auth.getAuth("id"));
+			if(container==null) continue;
 			List<Interval> interval=container.getIntervals();
 			Interval intervalAdd=new Interval();
 			if(interval==null) interval=new ArrayList<>();
@@ -327,7 +374,8 @@ public class TransportService {
 			JSONObject value= entry.getValue();
 			String key=entry.getKey() ;
 			//Cập nhật các đối tượng 
-			Instance mooc=instanceService.getByCodeID("MOOC",key);
+			Instance mooc=instanceService.getByCodeID("MOOC",key,auth.getAuth("id"));
+			if(mooc==null) continue;
 			List<Interval> interval=mooc.getIntervals();
 			if(interval==null) interval=new ArrayList<>();
 			Interval intervalAdd=new Interval();
@@ -353,7 +401,8 @@ public class TransportService {
 		Interval intervalAdd=new Interval();
 		intervalAdd.setDateStart((Date)startDate);
 		intervalAdd.setDateEnd((Date)endDate);
-		Instance truckDb=instanceService.getByCodeID("TRUCK",((JSONObject)truck).getAsString("code"));
+		Instance truckDb=instanceService.getByCodeID("TRUCK",((JSONObject)truck).getAsString("code"),auth.getAuth("id"));
+		if(truckDb==null) return;		
 		List<Interval> interval=truckDb.getIntervals();
 		if(interval==null) interval=new ArrayList<>();
 		interval.add(intervalAdd);
@@ -485,7 +534,7 @@ public class TransportService {
 		return result;
 	}
 
-	public void createdTrip(List<CustomerRequestRefModel> customerRequestRefModels) {
+	public boolean createdTrip(List<CustomerRequestRefModel> customerRequestRefModels) {
 		JSONObject jsonObjec = new JSONObject();
 			
 		String pattern = "yyyy-MM-dd HH:mm:ss";
@@ -530,7 +579,7 @@ public class TransportService {
 
 			if (item.getType().equals("ImportLadenRequest")) {
 				JSONObject importLadenRequest = new JSONObject();
-				importLadenRequest.put("id", i);
+				importLadenRequest.put("id", item.getIdCode());
 				importLadenRequest.put("isBreakRomooc", true);
 				if (!item.getContainerCode().isEmpty()) {
 
@@ -554,7 +603,7 @@ public class TransportService {
 			} else if (item.getType().equals("ImportEmptyRequest")) {
 
 				JSONObject importEmptyRequest = new JSONObject();
-				importEmptyRequest.put("id", i);
+				importEmptyRequest.put("id",  item.getIdCode());
 				importEmptyRequest.put("isBreakRomooc", true);
 				if (!item.getContainerCode().isEmpty()) {
 
@@ -576,7 +625,7 @@ public class TransportService {
 
 			} else if (item.getType().equals("ExportEmptyRequest")) {
 				JSONObject exportEmptyRequest = new JSONObject();
-				exportEmptyRequest.put("id", i);
+				exportEmptyRequest.put("id",  item.getIdCode());
 				exportEmptyRequest.put("isBreakRomooc", true);
 				if (!item.getContainerCode().isEmpty()) {
 
@@ -600,7 +649,7 @@ public class TransportService {
 
 			} else if (item.getType().equals("ExportLadenRequest")) {
 				JSONObject exportLadenRequest = new JSONObject();
-				exportLadenRequest.put("id", i);
+				exportLadenRequest.put("id", item.getIdCode());
 				exportLadenRequest.put("isBreakRomooc", true);
 				if (!item.getContainerCode().isEmpty()) {
 
@@ -650,9 +699,23 @@ public class TransportService {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
-
-		ReadFileAndWriteToDB(name);
+		try {
+			
+			ReadFileAndWriteToDB(name);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			for (int i = 0; i < customerRequestRefModels.size(); i++) {
+				
+				CustomerRequestRefModel item = customerRequestRefModels.get(i);
+				/**
+				 * Update cac request coi như đã được lập lịch thành công
+				 */
+				reqService.updateStatusIsSchedule(item.getId(), false);}
+			return false;
+		}
+		return true;
 	}
 
 	private JSONObject getParams() {

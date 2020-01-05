@@ -20,6 +20,14 @@ public class Instance extends BaseModel {
 	private String depotLocationCode;
 	private String status="Rảnh";
 	private List<String> returnDepotCodes;
+	private String licensePlates;
+	
+	public String getLicensePlates() {
+		return licensePlates;
+	}
+	public void setLicensePlates(String licensePlates) {
+		this.licensePlates = licensePlates;
+	}
 	private List<Interval>  intervals;	
 	
 	public String getStatus() {

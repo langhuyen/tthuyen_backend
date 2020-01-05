@@ -14,8 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class CustomerRequest extends BaseModel {
 	@Id
 	private String id;
-
-	
 	private String warehouseCode;
 	private String portCode;
 	private String containerCode;
@@ -25,8 +23,9 @@ public class CustomerRequest extends BaseModel {
 	private Date earlyDeliveryDateTime;
 	private Date lateDeliveryDateTime;
 	private String containerTypeCode;
-	private Integer weight;
-	private Date requestDate=new Date();
+	private Float weight= new Float(0.0);
+	@SuppressWarnings("deprecation")
+	private Date requestDate=new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate(),12,0,0);
 	private Boolean isSchedule=false;
 	
 	public Boolean getIsSchedule() {
@@ -95,10 +94,10 @@ public class CustomerRequest extends BaseModel {
 	public void setContainerTypeCode(String containerTypeCode) {
 		this.containerTypeCode = containerTypeCode;
 	}
-	public Integer getQuantity() {
+	public Float getWeight() {
 		return weight;
 	}
-	public void setQuantity(Integer weight) {
+	public void setWeight(Float weight) {
 		this.weight = weight;
 	}
 	public Date getRequestDate() {
@@ -109,7 +108,7 @@ public class CustomerRequest extends BaseModel {
 	}
 	public CustomerRequest(String id, String warehouseCode, String portCode, String containerCode,
 			Date earlyPickupDateTime, Date latePickupDateTime, Date earlyDeliveryDateTime, Date lateDeliveryDateTime,
-			String containerTypeCode, Integer weight, Date requestDate) {
+			String containerTypeCode, Float weight, Date requestDate) {
 		super();
 		this.id = id;
 		this.warehouseCode = warehouseCode;

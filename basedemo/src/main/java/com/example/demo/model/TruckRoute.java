@@ -20,7 +20,8 @@ public class TruckRoute {
 	private Integer nbStops;
 	private Integer travelTime=0;
 	private List<Object> nodes;
-	private Date createdDate=new Date();
+	@SuppressWarnings("deprecation")
+	private Date createdDate=new Date(new Date().getYear(),new Date().getMonth(),new Date().getDate(),12,0,0);
 	private String userId;
 	
 	

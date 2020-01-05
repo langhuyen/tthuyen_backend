@@ -18,8 +18,8 @@ public interface  IBaseRepository<T extends BaseModel,ID> extends MongoRepositor
 	
 	@Query("{type:?0,userId:?1}")
 	T findByCode(String key);
-	@Query("{type:?0,idCode:?1}")
-	T findByIdCode(String type,String key);
+	@Query("{type:?0,idCode:?1,userId:?2}")
+	T findByIdCode(String type,String key,String userId);
 	
 	@Query("{$text:{$search:\"\\\"?0\\\"\",$caseSensitive:false},type:\"?1\"}")
 	List<T> searchByField(String queryString,String type);

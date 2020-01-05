@@ -18,11 +18,14 @@ import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.CustomerRequest;
 import com.example.demo.model.CustomerRequestRefModel;
 import com.example.demo.model.DateParam;
+import com.example.demo.model.Distance;
 import com.example.demo.model.Entity;
 import com.example.demo.repository.IBaseRepository;
 import com.example.demo.repository.ICustomerRequestRepository;
@@ -50,21 +53,42 @@ public class CustomerRequestService extends BaseService<CustomerRequest,String>{
 
 	 
 	 public boolean updateStatusIsSchedule(String id,Boolean isSchedule) {
-		 CustomerRequest req=repo.findById(id).get();
-		 if(req!=null) {
-			 try {
-				 req.setIsSchedule(isSchedule);
-				repo.save(req);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-			 return true;
-		 }
-		 return false;
-		 
+		 Query query = new Query();
+     	query.addCriteria(
+     		        Criteria.where("_id").is(id)
+     		);
+     	Update update = new Update();
+     	update.set("isSchedule", isSchedule);
+     try {
+     	mongoTemplate.updateFirst(query, update, CustomerRequest.class);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return false;
+		}	
+     	
+     return true;
 	 }
+
 	 
+	 public boolean updateStatusIsScheduleByCodeID(String codeId,String userId,Boolean isSchedule) {
+			Query query = new Query();
+        	query.addCriteria(
+        		    
+        		        Criteria.where("idCode").is(codeId).and("userId").is(userId)
+        		    
+        		);
+        	Update update = new Update();
+        	update.set("isSchedule", isSchedule);
+        try {
+        	mongoTemplate.updateFirst(query, update, CustomerRequest.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+			return false;
+		}	
+        	
+        return true;
+	 }
 	 
 	 /**
 	  * Lấy danh sach các customerrequest phục vụ cho việc lập lịch

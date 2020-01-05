@@ -34,4 +34,15 @@ public class DistanceService extends BaseService<Distance,String>{
         	return mongoTemplate.find(query, Distance.class,"distance");
         	
         }
+        
+        public void deleteBySrc(Integer locationCode) {
+        	Query query = new Query();
+        	query.addCriteria(
+        		    new Criteria().orOperator(
+        		        Criteria.where("srcCode").is(locationCode),
+        		        Criteria.where("desCode").is(locationCode)
+        		    )
+        		);
+        	 mongoTemplate.remove(query, Distance.class);
+        }
 }

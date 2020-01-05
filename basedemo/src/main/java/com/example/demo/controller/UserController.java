@@ -42,11 +42,12 @@ public class UserController {
 	
 	//Gửi lại mã confirm 
 	@PostMapping(value="/sendTokenEmail")
-	public void sendTokenEmail(@Param(value="userId") String userId) {
+	public boolean sendTokenEmail(@Param(value="userId") String userId) {
 		UserModel user=userRepository.findById(userId).get();
 		if(user!=null) {
-			sendEmail(user);
+			return sendEmail(user);
 		}
+		return false;
 	}
 	
 	@RequestMapping(value = "/verifyUser", method = RequestMethod.POST)
@@ -148,11 +149,18 @@ public class UserController {
 		return res;
 	}
 	
-	public void sendEmail(UserModel user) {
+	public boolean sendEmail(UserModel user) {
 		String token=ramdomToken();
 		user.setTokenEmail(token);
 		userRepository.save(user);
-		emailService.sendEmailTo(user.getEmail(),token,user.getUsername());
+		try {
+			emailService.sendEmailTo(user.getEmail(),token,user.getUsername());
+			
+		} catch (Exception e) {
+			return false;
+			// TODO: handle exception
+		}
+		return true;
 		
 	}
 	public String ramdomToken() {

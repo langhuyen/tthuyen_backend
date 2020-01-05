@@ -44,9 +44,16 @@ public class Transport {
 	@Autowired
 	AutoId autoId;
 	@PostMapping("/createdTrip")
-	public String createdTrip(@RequestBody List<CustomerRequestRefModel> customerRequestRefModels) throws ParseException {
-		service.createdTrip(customerRequestRefModels);
-	return "OK";
+	public boolean createdTrip(@RequestBody List<CustomerRequestRefModel> customerRequestRefModels) throws ParseException {
+		boolean result=false;
+		try {
+			
+		result=	service.createdTrip(customerRequestRefModels);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+	return result;
 	}
 	
 	@GetMapping("/getRouter")

@@ -114,7 +114,34 @@ public class EntityController extends BaseController<Entity, String> {
 		}
 		return res;
 	}
+	
+	
+	
+	
 
+
+	@Override
+	@PostMapping("/delete")
+	public ResponseModel delete(@RequestBody  Entity entity){
+		ResponseModel res=new ResponseModel();
+		try {
+			
+			boolean  result=service.delete(entity);
+			deleteDistance(entity);
+		
+		} catch (Exception e) {
+			// TODO: handle exception
+			res.error();
+			res.setMessage(e.toString());
+		}
+		return res;
+		 
+	}
+
+	private void deleteDistance(Entity entity) {
+		// TODO Auto-generated method stub
+		((DistanceService)distanceService).deleteBySrc(entity.getLocationCode());
+	}
 
 	/**
 	 * Thuc hien update khoang cach cac vi tri
