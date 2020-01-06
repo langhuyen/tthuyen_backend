@@ -75,7 +75,7 @@ public class UserController {
 	            { 
 	            	//Khai bao 1 mang
 	            	List<String> arrType=Arrays.asList("CONTAINER","PORT","WAREHOUSE","DEPOTCONTAINER","DEPOTTRUCK",
-	            			"DEPOTTRAILLER","TRUCK","MOOC","ImportLadenRequest","ImportEmptyRequest","ExportEmptyRequest","ExportLadenRequest");
+	            			"DEPOTTRAILER","TRUCK","MOOC","ImportLadenRequest","ImportEmptyRequest","ExportEmptyRequest","ExportLadenRequest");
 	            	List<String> arrPrefix=Arrays.asList("C","P","W","DC","DTRU","DTRA","T","M","ILR","IER","EER","ELR");
 	            	for (int i = 0; i < arrType.size(); i++) {
 						GenerateCode generateCode=new GenerateCode();

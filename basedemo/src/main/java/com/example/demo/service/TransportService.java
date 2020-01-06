@@ -214,8 +214,69 @@ public class TransportService {
 		Date convertDate=new Date(dateTime);
 		return convertDate;
 	}
+	
+	public void updateRequest(JSONObject data,String userId) {
+		   new Thread(new Runnable() { 
+	            public void run() 
+	            { 
 
-	public boolean ReadFileAndWriteToDB(String output) {
+	    			JSONArray unscheduledExEmptyRequests = (JSONArray) data.get("unscheduledExEmptyRequests");
+	    			JSONArray unscheduledExLadenRequests = (JSONArray) data.get("unscheduledExLadenRequests");
+	    			JSONArray unscheduledImEmptyRequests = (JSONArray) data.get("unscheduledImEmptyRequests");
+	    			JSONArray unscheduledImLadenRequests = (JSONArray) data.get("unscheduledImLadenRequests");
+	    			
+	    			
+	    			/**
+	    			 * Thực hiện lưu lộ trình các truck_router của 1 lần gọi request
+	    			 */
+	    			for (Object item : unscheduledExEmptyRequests) {
+	    				try {
+	    					JSONObject json = (JSONObject) item;
+	    					reqService.updateStatusIsScheduleByCodeID(json.getAsString("id"), userId, false);
+	    				}catch(Exception ex) {
+	    					
+	    				}
+	    			}
+	    			for (Object item : unscheduledExLadenRequests) {
+	    				try {
+	    					JSONObject json = (JSONObject) item;
+	    					reqService.updateStatusIsScheduleByCodeID(json.getAsString("id"),userId, false);
+	    				}catch(Exception ex) {
+	    					
+	    				}
+	    			}
+	    			for (Object item : unscheduledImEmptyRequests) {
+	    				try {
+	    					JSONObject json = (JSONObject) item;
+	    					reqService.updateStatusIsScheduleByCodeID( json.getAsString("id"), userId, false);
+	    				}catch(Exception ex) {
+	    					
+	    				}
+	    			}
+	    			for (Object item : unscheduledImLadenRequests) {
+	    				try {
+	    					JSONObject json = (JSONObject) item;
+	    					reqService.updateStatusIsScheduleByCodeID( json.getAsString("id"), userId, false);
+	    				}catch(Exception ex) {
+	    					
+	    				}
+	    			}
+	            	
+	            	
+	            }}).start();
+	}
+	public void updateInstanceAll(JSONObject json,String userId ) {
+		new Thread(new Runnable() { 
+			public void run() 
+			{ 
+				
+				updateInstance(json.get("truck"), (List<Object>) json.get("nodes"),userId);
+				
+				
+			}}).start();
+	}
+
+	public boolean ReadFileAndWriteToDB(String output,String userId) {
 
 		// JSON parser object to parse read file
 		@Deprecated
@@ -226,50 +287,9 @@ public class TransportService {
 			Object obj = jsonParser.parse(reader);
 
 			JSONObject data = (JSONObject) obj;
-			
+			updateRequest(data, userId);
 			//Thuc hien update trang thai cac yeu cau chua duoc thuc hien.
-			
-			JSONArray unscheduledExEmptyRequests = (JSONArray) data.get("unscheduledExEmptyRequests");
-			JSONArray unscheduledExLadenRequests = (JSONArray) data.get("unscheduledExLadenRequests");
-			JSONArray unscheduledImEmptyRequests = (JSONArray) data.get("unscheduledImEmptyRequests");
-			JSONArray unscheduledImLadenRequests = (JSONArray) data.get("unscheduledImLadenRequests");
-			
 			JSONArray truckRouteRaw = (JSONArray) data.get("truckRoutes");
-			/**
-			 * Thực hiện lưu lộ trình các truck_router của 1 lần gọi request
-			 */
-			for (Object item : unscheduledExEmptyRequests) {
-				try {
-					JSONObject json = (JSONObject) item;
-					reqService.updateStatusIsScheduleByCodeID(json.getAsString("id"), auth.getAuth("id"), false);
-				}catch(Exception ex) {
-					
-				}
-			}
-			for (Object item : unscheduledExLadenRequests) {
-				try {
-					JSONObject json = (JSONObject) item;
-					reqService.updateStatusIsScheduleByCodeID(json.getAsString("id"), auth.getAuth("id"), false);
-				}catch(Exception ex) {
-					
-				}
-			}
-			for (Object item : unscheduledImEmptyRequests) {
-				try {
-					JSONObject json = (JSONObject) item;
-					reqService.updateStatusIsScheduleByCodeID( json.getAsString("id"), auth.getAuth("id"), false);
-				}catch(Exception ex) {
-					
-				}
-			}
-			for (Object item : unscheduledImLadenRequests) {
-				try {
-					JSONObject json = (JSONObject) item;
-					reqService.updateStatusIsScheduleByCodeID( json.getAsString("id"), auth.getAuth("id"), false);
-				}catch(Exception ex) {
-					
-				}
-			}
 			for (Object item : truckRouteRaw) {
 				try {
 					JSONObject json = (JSONObject) item;
@@ -285,8 +305,8 @@ public class TransportService {
 					 * Thực hiện update các dữ liệu liên quan với mooc,truck,container với thời gian
 					 * được lập lịch
 					 */
-				
-					updateInstance(json.get("truck"), (List<Object>) json.get("nodes"));
+					
+					updateInstanceAll(json,userId);
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -310,7 +330,7 @@ public class TransportService {
 		return true;
 	}
 
-	private void updateInstance(Object truck, List<Object> nodes) {
+	private void updateInstance(Object truck, List<Object> nodes,String userId) {
 //		// TODO Auto-generated method stub
 //		 Number startTruckDate=((JSONObject)nodes.get(0)).getAsNumber("arrivalTime");
 		Map<String, JSONObject> mapMooc = new HashMap<String, JSONObject>();
@@ -351,7 +371,7 @@ public class TransportService {
 			String key=entry.getKey() ;
 			//Cập nhật các đối tượng 
 //			f
-			Instance container=instanceService.getByCodeID("CONTAINER",key,auth.getAuth("id"));
+			Instance container=instanceService.getByCodeID("CONTAINER",key,userId);
 			if(container==null) continue;
 			List<Interval> interval=container.getIntervals();
 			Interval intervalAdd=new Interval();
@@ -374,7 +394,7 @@ public class TransportService {
 			JSONObject value= entry.getValue();
 			String key=entry.getKey() ;
 			//Cập nhật các đối tượng 
-			Instance mooc=instanceService.getByCodeID("MOOC",key,auth.getAuth("id"));
+			Instance mooc=instanceService.getByCodeID("MOOC",key,userId);
 			if(mooc==null) continue;
 			List<Interval> interval=mooc.getIntervals();
 			if(interval==null) interval=new ArrayList<>();
@@ -401,7 +421,7 @@ public class TransportService {
 		Interval intervalAdd=new Interval();
 		intervalAdd.setDateStart((Date)startDate);
 		intervalAdd.setDateEnd((Date)endDate);
-		Instance truckDb=instanceService.getByCodeID("TRUCK",((JSONObject)truck).getAsString("code"),auth.getAuth("id"));
+		Instance truckDb=instanceService.getByCodeID("TRUCK",((JSONObject)truck).getAsString("code"),userId);
 		if(truckDb==null) return;		
 		List<Interval> interval=truckDb.getIntervals();
 		if(interval==null) interval=new ArrayList<>();
@@ -536,6 +556,7 @@ public class TransportService {
 
 	public boolean createdTrip(List<CustomerRequestRefModel> customerRequestRefModels) {
 		JSONObject jsonObjec = new JSONObject();
+		String userId=auth.getAuth("id");
 			
 		String pattern = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -703,7 +724,7 @@ public class TransportService {
 		}
 		try {
 			
-			ReadFileAndWriteToDB(name);
+			ReadFileAndWriteToDB(name,userId);
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			for (int i = 0; i < customerRequestRefModels.size(); i++) {

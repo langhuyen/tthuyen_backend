@@ -14,8 +14,8 @@ public class Auth {
 	public String getAuth(String key) {
 		SecurityContext ctx = SecurityContextHolder.getContext();
 		Authentication auth=ctx.getAuthentication();
-		OAuth2Authentication auth_=(OAuth2Authentication) auth;
-		Map<String, String> obj=(Map<String, String>)auth_.getUserAuthentication().getDetails();
+		OAuth2Authentication _auth=(OAuth2Authentication) auth;
+		Map<String, String> obj=(Map<String, String>)_auth.getUserAuthentication().getDetails();
 		return obj.get(key);
 	
 	}
